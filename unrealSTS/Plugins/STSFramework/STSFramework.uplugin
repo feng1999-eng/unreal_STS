@@ -1,0 +1,26 @@
+﻿{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1.0",
+	"FriendlyName": "STS Framework",
+	"Description": "Slay the Spire style GAS framework for unrealSTS",
+	"Category": "Gameplay",
+	"CreatedBy": "unrealSTS",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Plugins": [
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		}
+	],
+	"Modules": [
+		{
+			"Name": "STSFramework",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
