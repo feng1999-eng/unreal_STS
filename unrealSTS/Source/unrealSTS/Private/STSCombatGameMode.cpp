@@ -9,6 +9,7 @@
 #include "Character/STSEnemyCharacter.h"
 #include "Character/STSCharacterData.h"
 #include "Card/STSCardData.h"
+#include "Test/STSTestContentFactory.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
@@ -23,6 +24,7 @@ ASTSCombatGameState* ASTSCombatGameMode::GetSTSCombatGameState() const
 	return GetGameState<ASTSCombatGameState>();
 }
 
+// 牌组来源：Run 牌组 > 角色 StarterDeck > 测试工厂
 TArray<FSTSCardInstance> ASTSCombatGameMode::ResolveCombatDeck() const
 {
 	if (const USTSGameInstance* GameInstance = Cast<USTSGameInstance>(GetGameInstance()))
@@ -49,6 +51,11 @@ TArray<FSTSCardInstance> ASTSCombatGameMode::ResolveCombatDeck() const
 		}
 	}
 
+	if (!CharacterData && bUseBuiltInTestContent)
+	{
+		CharacterData = USTSTestContentFactory::GetTestCharacterData();
+	}
+
 	if (CharacterData)
 	{
 		for (const TObjectPtr<USTSCardData>& CardData : CharacterData->StarterDeck)
@@ -67,6 +74,7 @@ TArray<FSTSCardInstance> ASTSCombatGameMode::ResolveCombatDeck() const
 	return StarterDeck;
 }
 
+// 生成玩家、Possess、初始化 GAS；按 Encounter 条目生成敌人并应用 EnemyData
 void ASTSCombatGameMode::SpawnAndInitializeCombatants(
 	ASTSCombatGameState* CombatGameState,
 	ASTSPlayerCharacter*& OutPlayer,
@@ -127,6 +135,10 @@ void ASTSCombatGameMode::SpawnAndInitializeCombatants(
 	{
 		OutPlayer->InitializeFromCharacterData(CharacterData);
 	}
+	else if (bUseBuiltInTestContent)
+	{
+		OutPlayer->InitializeFromCharacterData(USTSTestContentFactory::GetTestCharacterData());
+	}
 	else
 	{
 		OutPlayer->GrantDefaultCombatAbilities();
@@ -145,6 +157,11 @@ void ASTSCombatGameMode::SpawnAndInitializeCombatants(
 	if (RunSubsystem && RunSubsystem->PendingEncounter)
 	{
 		Encounter = RunSubsystem->PendingEncounter;
+	}
+
+	if (!Encounter && bUseBuiltInTestContent)
+	{
+		Encounter = USTSTestContentFactory::GetTestEncounterData();
 	}
 
 	if (!Encounter)
@@ -203,6 +220,7 @@ void ASTSCombatGameMode::SpawnAndInitializeCombatants(
 	}
 }
 
+// 开战流程：RegisterCombatants → InitCombat(牌堆, 遭遇) → BeginCombat(进入玩家回合)
 void ASTSCombatGameMode::StartPlay()
 {
 	Super::StartPlay();
@@ -236,6 +254,11 @@ void ASTSCombatGameMode::StartPlay()
 	if (!Encounter)
 	{
 		Encounter = FallbackEncounterData;
+	}
+
+	if (!Encounter && bUseBuiltInTestContent)
+	{
+		Encounter = USTSTestContentFactory::GetTestEncounterData();
 	}
 
 	CombatGameState->InitCombat(CombatDeck, Encounter);

@@ -47,6 +47,25 @@ unrealSTS/
 └── Content/STS/              # 蓝图、DataAsset、UI、地图
 ```
 
+## Phase 1/2 验证（PIE）
+
+1. 打开 `unrealSTS.uproject`，编译完成后点 **Play**（默认已是战斗测试模式）。
+2. 屏幕会显示调试说明；左上角输出 Phase / HP / Energy / 手牌。
+3. 操作：
+   - **1–5**：打出 hand 索引 0–4 的牌（目标为第一个存活敌人）
+   - **E**：结束玩家回合
+   - **P**：刷新战斗状态
+   - 控制台：`sts.PlayCard 0`、`sts.EndTurn`、`sts.DebugCombat`
+4. 内置测试内容（`USTSTestContentFactory`）：5 张牌 Strike/Defend/Bash/Poison/Cleave + 1 个 Cultist 敌人。
+5. 验证清单：
+   - [ ] 回合开始 Energy=3、抽 5 张
+   - [ ] Strike 扣敌人 HP；Defend 加 Block
+   - [ ] Bash 伤害 + 易伤；Cleave 打全体（单敌人时等同单体）
+   - [ ] EndTurn 后敌人攻击，再进入下一玩家回合
+   - [ ] 敌人 HP≤0 胜利；玩家 HP≤0 失败
+
+关闭内置测试：在 `ASTSCombatGameMode` 上取消 `bUseBuiltInTestContent`，改用 Content 里的 DataAsset。
+
 ## Phase 0 已完成
 
 - [x] `STSFramework` 插件骨架
